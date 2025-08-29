@@ -1,12 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import axios from "axios";
-import * as cheerio from "cheerio";
-
-type Result = {
-    title: string;
-    link: string;
-    snippet?: string;
-};
+import { Result } from "@/app/types/result.type";
 
 export async function GET(req: NextRequest) {
     const query = req.nextUrl.searchParams.get("query");
@@ -17,27 +11,19 @@ export async function GET(req: NextRequest) {
         );
     }
 
-    const url = `https://google.com/search?q=${encodeURIComponent(query)}`;
-
     try {
-        const { data } = await axios.get(url, {
-            headers: {
-                "User-Agent":
-                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3",
+        const res = await axios.get("https://serpapi.com/search.json", {
+            params: {
+                q: query,
+                api_key: process.env.SERPAPI_API_KEY,
             },
         });
 
-        const $ = cheerio.load(data);
-        const results: Result[] = [];
-
-        $("div.g").each((index, element) => {
-            const title = $(element).find("h3").text();
-            const link = $(element).find("a").attr("href");
-            const snippet = $(element).find(".VwiC3b").text();
-            if (title && link) {
-                results.push({ title, link, snippet });
-            }
-        });
+        const results = res.data.organic_results.map((result: Result) => ({
+            title: result.title,
+            link: result.link,
+            snippet: result.snippet,
+        }));
 
         return NextResponse.json(results);
     } catch (error) {
