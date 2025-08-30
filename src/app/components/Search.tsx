@@ -3,6 +3,9 @@
 import { useState } from "react";
 import { Result } from "../types/result.type";
 import axios from "axios";
+import SearchInput from "./SearchInput";
+import DownloadButton from "./DownloadButton";
+import SearchResults from "./SearchResults";
 
 /**
  * A search component that fetches search results from the API when a query is
@@ -55,52 +58,17 @@ const Search = () => {
                 🔍 Google Scraper
             </h1>
 
-            <div className="flex flex-col sm:flex-row gap-4 w-full max-w-xl">
-                <input
-                    type="text"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Enter a search query"
-                    className="flex-1 p-3 rounded-xl border-2 border-white bg-white/20 placeholder-white text-white focus:outline-none focus:ring-2 focus:ring-pink-300 backdrop-blur-sm transition-all"
-                />
-                <button
-                    onClick={handleSearch}
-                    disabled={loading}
-                    className="px-6 py-3 rounded-xl bg-white/30 hover:bg-white/50 text-white font-semibold shadow-lg transform hover:scale-105 transition-transform duration-200 cursor-pointer"
-                >
-                    {loading ? "⏳ Loading..." : "Search"}
-                </button>
-            </div>
+            <SearchInput
+                query={query}
+                setQuery={setQuery}
+                onSearch={handleSearch}
+                loading={loading}
+            />
 
             {results.length > 0 && (
                 <div className="mt-8 w-full max-w-xl space-y-4">
-                    <button
-                        onClick={downloadJSON}
-                        className="px-4 py-2 rounded-lg bg-yellow-400 text-gray-900 font-bold hover:scale-105 transition-transform duration-200 shadow-md cursor-pointer"
-                    >
-                        💾 Download JSON
-                    </button>
-
-                    <ul className="space-y-3">
-                        {results.map((result, index) => (
-                            <li
-                                key={index}
-                                className="p-4 rounded-2xl bg-white/20 backdrop-blur-md hover:bg-white/30 transition-colors duration-300 shadow-inner"
-                            >
-                                <a
-                                    href={result.link}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="text-lg font-bold underline decoration-pink-300 hover:text-pink-100 hover:scale-105 transform transition-all duration-200 block"
-                                >
-                                    {result.title}
-                                </a>
-                                <p className="mt-1 text-sm text-white/90">
-                                    {result.snippet}
-                                </p>
-                            </li>
-                        ))}
-                    </ul>
+                    <DownloadButton onClick={downloadJSON} />
+                    <SearchResults results={results} />
                 </div>
             )}
         </div>
