@@ -15,6 +15,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
     title: "Google Scraper",
     description: "Get Google search results as JSON",
+    icons: "/favicon.ico", // By NajmunNahar from flaticon.com
 };
 
 /**
